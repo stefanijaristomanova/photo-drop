@@ -6,7 +6,6 @@
 <title>Photo Drop</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root{
     --ink:#151310;
@@ -41,7 +40,7 @@
     letter-spacing:-0.01em;
   }
   .wrap{
-    max-width:520px;
+    max-width:480px;
     margin:0 auto;
     padding:28px 20px 60px;
     min-height:100vh;
@@ -50,8 +49,8 @@
   header{
     display:flex;
     align-items:center;
-    justify-content:space-between;
-    margin-bottom:28px;
+    justify-content:center;
+    margin-bottom:24px;
   }
   .brand{display:flex;align-items:center;gap:10px;}
   .brand .dot{
@@ -60,16 +59,6 @@
     box-shadow:0 0 0 4px rgba(226,161,61,0.15);
   }
   .brand h1{font-size:19px;}
-  .gear{
-    width:36px;height:36px;border-radius:10px;
-    border:1px solid var(--line);
-    background:var(--ink-soft);
-    color:var(--paper);
-    display:flex;align-items:center;justify-content:center;
-    cursor:pointer;
-    font-size:16px;
-  }
-  .gear:hover{border-color:var(--amber-dim);}
 
   /* filmstrip frame */
   .filmstrip{
@@ -94,29 +83,6 @@
   .filmstrip::after{bottom:0;}
   .filmstrip-inner{ padding:14px 4px 6px; }
 
-  .qr-card{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:16px;
-    text-align:center;
-  }
-  #qrcode{
-    background:#fff;
-    padding:12px;
-    border-radius:10px;
-    box-shadow:0 1px 0 rgba(0,0,0,0.05) inset;
-  }
-  #qrcode img{display:block;}
-  .session-code{
-    font-family:'JetBrains Mono',monospace;
-    font-size:13px;
-    letter-spacing:0.08em;
-    color:var(--ink);
-    opacity:0.6;
-  }
-  .session-code b{opacity:1;color:var(--amber-dim);}
-
   .btn{
     font-family:'Inter',sans-serif;
     font-weight:600;
@@ -132,60 +98,21 @@
   }
   .btn-primary{background:var(--amber);color:var(--ink);}
   .btn-primary:hover{background:#eeb459;}
-  .btn-ghost{background:transparent;color:var(--ink);border:1px solid rgba(21,19,16,0.2);}
-  .btn-ghost:hover{border-color:var(--ink);}
   .btn-block{width:100%;}
-  .btn:disabled{opacity:0.5;cursor:not-allowed;}
 
-  .row{display:flex;gap:10px;}
+  .intro{text-align:center;padding-bottom:2px;}
+  .intro p{font-size:13px;opacity:0.65;margin:0 0 16px;line-height:1.5;}
+  .intro p b{opacity:1;color:var(--amber-dim);}
 
-  section.panel{
-    margin-top:22px;
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:18px;
-  }
-  .panel h3{font-size:14px;text-transform:uppercase;letter-spacing:0.06em;color:var(--paper);opacity:0.75;margin-bottom:12px;}
-
-  .feed-item{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:9px 0;
-    border-bottom:1px solid var(--line);
-    font-size:13px;
-  }
-  .feed-item:last-child{border-bottom:none;}
-  .feed-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .status-pill{
-    font-family:'JetBrains Mono',monospace;
-    font-size:10px;
-    letter-spacing:0.05em;
-    text-transform:uppercase;
-    padding:3px 8px;
-    border-radius:20px;
-  }
-  .status-uploading{background:rgba(226,161,61,0.18);color:var(--amber);}
-  .status-done{background:rgba(111,191,160,0.18);color:var(--mint);}
-  .status-error{background:rgba(201,100,80,0.18);color:var(--red);}
-
-  .empty{
-    font-size:13px;
-    opacity:0.55;
-    padding:6px 0;
-  }
-
-  /* mobile upload view */
-  .upload-view .filmstrip{padding-top:30px;}
   .dropzone{
     border:1.5px dashed rgba(21,19,16,0.3);
     border-radius:12px;
-    padding:26px 16px;
+    padding:30px 16px;
     text-align:center;
     cursor:pointer;
   }
   .dropzone:hover{border-color:var(--amber-dim);}
-  .dropzone .icon{font-size:26px;margin-bottom:6px;}
+  .dropzone .icon{font-size:28px;margin-bottom:6px;}
   .dropzone .sub{font-size:12px;opacity:0.6;margin-top:4px;}
   input[type=file]{display:none;}
 
@@ -193,7 +120,7 @@
     display:grid;
     grid-template-columns:repeat(3,1fr);
     gap:8px;
-    margin-top:16px;
+    margin-top:18px;
   }
   .thumb{
     position:relative;
@@ -213,48 +140,6 @@
     font-family:'JetBrains Mono',monospace;
   }
 
-  /* modal */
-  .modal-backdrop{
-    position:fixed;inset:0;
-    background:rgba(0,0,0,0.55);
-    display:none;
-    align-items:center;justify-content:center;
-    padding:20px;
-    z-index:50;
-  }
-  .modal-backdrop.open{display:flex;}
-  .modal{
-    background:var(--ink-soft);
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:22px;
-    width:100%;
-    max-width:420px;
-  }
-  .modal h3{font-size:16px;margin-bottom:14px;}
-  .field{margin-bottom:14px;}
-  .field label{
-    display:block;
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:0.06em;
-    opacity:0.6;
-    margin-bottom:6px;
-  }
-  .field input{
-    width:100%;
-    background:var(--ink);
-    border:1px solid var(--line);
-    color:var(--paper);
-    padding:10px 12px;
-    border-radius:8px;
-    font-family:'JetBrains Mono',monospace;
-    font-size:12.5px;
-  }
-  .field input:focus{outline:none;border-color:var(--amber-dim);}
-  .field .hint{font-size:11px;opacity:0.45;margin-top:5px;line-height:1.4;}
-  .modal-actions{display:flex;gap:10px;margin-top:18px;}
-
   .banner{
     border:1px solid var(--amber-dim);
     background:rgba(226,161,61,0.08);
@@ -264,7 +149,6 @@
     line-height:1.5;
     margin-bottom:20px;
   }
-  .banner a, .link{color:var(--amber);cursor:pointer;text-decoration:underline;}
 
   footer{
     text-align:center;
@@ -273,318 +157,151 @@
     opacity:0.35;
     font-family:'JetBrains Mono',monospace;
   }
-
-  .signin-box{text-align:center;padding:10px 0 4px;}
-  .signin-box p{font-size:13px;opacity:0.65;margin:0 0 14px;}
 </style>
 </head>
 <body>
 
-<div class="wrap" id="app"></div>
+<!--
+  ============================================================
+  BEFORE YOU DEPLOY THIS FILE: fill in the two values below.
+  ============================================================
+  ENDPOINT — the Apps Script web app URL from Code.gs
+             (Deploy -> New deployment -> Web app -> Execute as Me,
+             Access: Anyone -> copy the URL it gives you)
+  FOLDER   — the Google Drive folder name uploads should land in.
+             Created automatically the first time someone uploads.
 
-<!-- Settings modal -->
-<div class="modal-backdrop" id="settingsModal">
-  <div class="modal">
-    <h3>App setup</h3>
-    <div class="field">
-      <label>Upload endpoint</label>
-      <input id="cfgClientId" placeholder="https://script.google.com/macros/s/XXXX/exec">
-      <div class="hint">The URL of your Apps Script web app deployment (see Code.gs setup notes). Visitors never see a Google sign-in — this endpoint writes to your Drive on their behalf.</div>
-    </div>
-    <div class="field">
-      <label>Public URL of this page</label>
-      <input id="cfgAppUrl" placeholder="https://your-host.example.com/photo-drop.html">
-      <div class="hint">The address people's phones will load when they scan the code. Defaults to the current address.</div>
-    </div>
-    <div class="field">
-      <label>Drive folder name</label>
-      <input id="cfgFolder" placeholder="Photo Drop Uploads">
-      <div class="hint">Created automatically in the signed-in account's Drive on first upload.</div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost btn-block" id="cancelSettings">Cancel</button>
-      <button class="btn btn-primary btn-block" id="saveSettings">Save</button>
-    </div>
-  </div>
-</div>
+  Once these are set and the file is hosted, every visitor lands
+  straight on the upload screen — no settings, no sign-in.
+-->
+<script>
+  const CONFIG = {
+    ENDPOINT: 'https://script.google.com/macros/s/AKfycbwr_q6JRO_pd_F6acre9V3ykEW8MOjLfTxhGYNVPv6S0wkhmlfO3VlbgCHj4UeHvSBudQ/exec',                    // <-- paste your Apps Script /exec URL here
+    FOLDER: 'Prijovci'     // <-- change if you want a different folder name
+  };
+</script>
+
+<div class="wrap" id="app"></div>
 
 <script>
 (function(){
-
-  // ---------- helpers ----------
-  const qs = new URLSearchParams(location.search);
-  const sessionId = qs.get('s');
   const app = document.getElementById('app');
-
-  function uid(len){
-    const chars='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-    let s='';
-    for(let i=0;i<len;i++) s+=chars[Math.floor(Math.random()*chars.length)];
-    return s;
-  }
-
-  async function storeGet(key, shared){
-    try{
-      const r = await window.storage.get(key, !!shared);
-      return r ? r.value : null;
-    }catch(e){ return null; }
-  }
-  async function storeSet(key, value, shared){
-    try{ await window.storage.set(key, value, !!shared); }catch(e){ console.error('storage set failed', e); }
-  }
-
-  async function getConfig(){
-    const raw = await storeGet('config', true);
-    return raw ? JSON.parse(raw) : { endpoint:'', appUrl:'', folder:'Photo Drop Uploads' };
-  }
-  async function setConfig(cfg){
-    await storeSet('config', JSON.stringify(cfg), true);
-  }
-
-  async function getSession(id){
-    const raw = await storeGet('session:'+id, true);
-    return raw ? JSON.parse(raw) : null;
-  }
-  async function setSession(id, data){
-    await storeSet('session:'+id, JSON.stringify(data), true);
-  }
-
-  // ================= DESKTOP / QR VIEW =================
-  async function renderQrView(){
-    const cfg = await getConfig();
-    const appUrl = cfg.appUrl || location.href.split('?')[0];
-    const needsSetup = !cfg.endpoint;
-    const sid = uid(6);
-    await setSession(sid, { createdAt: Date.now(), files: [] });
-    const uploadUrl = appUrl + '?s=' + sid;
-
-    app.innerHTML = `
-      <header>
-        <div class="brand"><span class="dot"></span><h1>Photo Drop</h1></div>
-        <div class="gear" id="openSettings" title="Setup">&#9881;</div>
-      </header>
-      ${needsSetup ? `<div class="banner">This app needs a one-time setup before it can upload anywhere. Tap the gear icon and add your Apps Script upload endpoint and this page's public URL.</div>` : ''}
-      <div class="filmstrip">
-        <div class="filmstrip-inner">
-          <div class="qr-card">
-            <div class="eyebrow">Скенирај за да прикачиш слика</div>
-            <div id="qrcode"></div>
-            <div class="session-code">Session <b>${sid}</b></div>
-            <div class="row" style="width:100%">
-              <button class="btn btn-ghost btn-block" id="newSession">New code</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <section class="panel">
-        <h3>СТАТУС</h3>
-        <div id="feed"><div class="empty">Прикачи фотографии&hellip;</div></div>
-      </section>
-    `;
-
-    new QRCode(document.getElementById('qrcode'), {
-      text: uploadUrl,
-      width: 200,
-      height: 200,
-      colorDark: '#151310',
-      colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.M
-    });
-
-    document.getElementById('openSettings').onclick = () => openSettings(renderQrView);
-    document.getElementById('newSession').onclick = renderQrView;
-
-    // poll for live feed
-    let stop = false;
-    const poll = async () => {
-      if(stop) return;
-      const s = await getSession(sid);
-      const feedEl = document.getElementById('feed');
-      if(feedEl){
-        if(!s || !s.files || s.files.length===0){
-          feedEl.innerHTML = '<div class="empty">Waiting for photos&hellip;</div>';
-        } else {
-          feedEl.innerHTML = s.files.map(f => `
-            <div class="feed-item">
-              <span class="feed-name">${escapeHtml(f.name)}</span>
-              <span class="status-pill status-${f.status}">${f.status}</span>
-            </div>
-          `).join('');
-        }
-      }
-      setTimeout(poll, 1800);
-    };
-    poll();
-    window.addEventListener('beforeunload', ()=>{ stop = true; });
-  }
 
   function escapeHtml(str){
     return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   }
 
-  // ================= SETTINGS MODAL =================
-  async function openSettings(onClose){
-    const cfg = await getConfig();
-    document.getElementById('cfgClientId').value = cfg.endpoint || '';
-    document.getElementById('cfgAppUrl').value = cfg.appUrl || location.href.split('?')[0];
-    document.getElementById('cfgFolder').value = cfg.folder || 'Photo Drop Uploads';
-    const modal = document.getElementById('settingsModal');
-    modal.classList.add('open');
-    document.getElementById('cancelSettings').onclick = () => modal.classList.remove('open');
-    document.getElementById('saveSettings').onclick = async () => {
-      const newCfg = {
-        endpoint: document.getElementById('cfgClientId').value.trim(),
-        appUrl: document.getElementById('cfgAppUrl').value.trim(),
-        folder: document.getElementById('cfgFolder').value.trim() || 'Photo Drop Uploads'
-      };
-      await setConfig(newCfg);
-      modal.classList.remove('open');
-      if(onClose) onClose();
-    };
-  }
-
-  // ================= MOBILE UPLOAD VIEW (no visitor sign-in) =================
-  async function renderUploadView(){
-    const cfg = await getConfig();
-    if(!cfg.endpoint){
-      app.innerHTML = `
-        <header><div class="brand"><span class="dot"></span><h1>Photo Drop</h1></div></header>
-        <div class="banner">This upload link isn't configured yet. Ask whoever generated the code to finish setup (upload endpoint) from the main screen, then generate a new code.</div>
-      `;
-      return;
-    }
-
-    let session = await getSession(sessionId);
-    if(!session){ session = { createdAt: Date.now(), files: [] }; }
-
+  if(!CONFIG.ENDPOINT){
     app.innerHTML = `
-      <div class="upload-view">
-        <header>
-          <div class="brand"><span class="dot"></span><h1>Photo Drop</h1></div>
-        </header>
-        <div class="filmstrip">
-          <div class="filmstrip-inner">
-            <div class="signin-box" style="padding-bottom:0;">
-              <p>Uploading to <b>${escapeHtml(cfg.folder)}</b></p>
-            </div>
-            <div id="uploadArea">
-              <div class="dropzone" id="dropzone">
-                <div class="icon">&#128247;</div>
-                <div><b>Choose photos</b></div>
-                <div class="sub">or take a new one</div>
-              </div>
-              <input type="file" id="fileInput" accept="image/*" multiple capture="environment">
-              <div class="thumbs" id="thumbs"></div>
-            </div>
-          </div>
-        </div>
-        <footer>SESSION ${escapeHtml(sessionId || '')}</footer>
+      <header><div class="brand"><span class="dot"></span><h1>Photo Drop</h1></div></header>
+      <div class="banner">
+        This page isn't configured yet. Open the HTML file, find the <b>CONFIG</b>
+        block near the top, and paste in your Apps Script web app URL
+        (see Code.gs setup notes) before deploying.
       </div>
     `;
-
-    document.getElementById('dropzone').addEventListener('click', () => {
-      document.getElementById('fileInput').click();
-    });
-
-    document.getElementById('fileInput').addEventListener('change', async (e) => {
-      const files = Array.from(e.target.files || []);
-      if(files.length === 0) return;
-      for(const file of files){
-        await uploadFile(file);
-      }
-      e.target.value = '';
-    });
-
-    function fileToBase64(file){
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(',')[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    async function uploadFile(file){
-      const thumbId = 'th_' + Math.random().toString(36).slice(2);
-      addThumb(thumbId, file);
-      await pushFileStatus(file.name, 'uploading');
-
-      try{
-        const base64 = await fileToBase64(file);
-        const body = new URLSearchParams({
-          filename: file.name,
-          mimeType: file.type || 'image/jpeg',
-          folder: cfg.folder,
-          data: base64
-        });
-
-        const res = await fetch(cfg.endpoint, {
-          method: 'POST',
-          body: body
-        });
-
-        let ok = res.ok;
-        try{
-          const data = await res.json();
-          ok = ok && data.success;
-        }catch(parseErr){
-          // Response wasn't readable (e.g. an opaque/CORS-limited response) —
-          // the request still reached the endpoint, so treat as sent.
-        }
-
-        if(ok){
-          markThumbDone(thumbId);
-          await pushFileStatus(file.name, 'done');
-        } else {
-          markThumbError(thumbId);
-          await pushFileStatus(file.name, 'error');
-        }
-      }catch(err){
-        markThumbError(thumbId);
-        await pushFileStatus(file.name, 'error');
-      }
-    }
-
-    function addThumb(id, file){
-      const thumbs = document.getElementById('thumbs');
-      const div = document.createElement('div');
-      div.className = 'thumb';
-      div.id = id;
-      const img = document.createElement('img');
-      img.src = URL.createObjectURL(file);
-      const badge = document.createElement('div');
-      badge.className = 'badge';
-      badge.textContent = '\u2026';
-      div.appendChild(img);
-      div.appendChild(badge);
-      thumbs.prepend(div);
-    }
-    function markThumbDone(id){
-      const el = document.getElementById(id);
-      if(el) el.querySelector('.badge').textContent = '\u2713';
-    }
-    function markThumbError(id){
-      const el = document.getElementById(id);
-      if(el) el.querySelector('.badge').textContent = '!';
-    }
-
-    async function pushFileStatus(name, status){
-      const s = await getSession(sessionId) || { createdAt: Date.now(), files: [] };
-      const existing = s.files.find(f => f.name === name && f.status === 'uploading');
-      if(status !== 'uploading' && existing){
-        existing.status = status;
-      } else {
-        s.files.push({ name, status });
-      }
-      await setSession(sessionId, s);
-    }
+    return;
   }
 
-  // ================= ROUTER =================
-  if(sessionId){
-    renderUploadView();
-  } else {
-    renderQrView();
+  app.innerHTML = `
+    <header><div class="brand"><span class="dot"></span><h1>Photo Drop</h1></div></header>
+    <div class="filmstrip">
+      <div class="filmstrip-inner">
+        <div class="intro">
+          <p>Uploading to <b>${escapeHtml(CONFIG.FOLDER)}</b></p>
+        </div>
+        <div class="dropzone" id="dropzone">
+          <div class="icon">&#128247;</div>
+          <div><b>Choose photos</b></div>
+          <div class="sub">or take a new one</div>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" multiple capture="environment">
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+    </div>
+    <footer>NO SIGN-IN NEEDED &middot; PHOTOS GO STRAIGHT TO YOUR DRIVE</footer>
+  `;
+
+  document.getElementById('dropzone').addEventListener('click', () => {
+    document.getElementById('fileInput').click();
+  });
+
+  document.getElementById('fileInput').addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files || []);
+    if(files.length === 0) return;
+    for(const file of files){
+      await uploadFile(file);
+    }
+    e.target.value = '';
+  });
+
+  function fileToBase64(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function addThumb(id, file){
+    const thumbs = document.getElementById('thumbs');
+    const div = document.createElement('div');
+    div.className = 'thumb';
+    div.id = id;
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    const badge = document.createElement('div');
+    badge.className = 'badge';
+    badge.textContent = '\u2026';
+    div.appendChild(img);
+    div.appendChild(badge);
+    thumbs.prepend(div);
+  }
+  function markThumbDone(id){
+    const el = document.getElementById(id);
+    if(el) el.querySelector('.badge').textContent = '\u2713';
+  }
+  function markThumbError(id){
+    const el = document.getElementById(id);
+    if(el) el.querySelector('.badge').textContent = '!';
+  }
+
+  async function uploadFile(file){
+    const thumbId = 'th_' + Math.random().toString(36).slice(2);
+    addThumb(thumbId, file);
+
+    try{
+      const base64 = await fileToBase64(file);
+      const body = new URLSearchParams({
+        filename: file.name,
+        mimeType: file.type || 'image/jpeg',
+        folder: CONFIG.FOLDER,
+        data: base64
+      });
+
+      const res = await fetch(CONFIG.ENDPOINT, {
+        method: 'POST',
+        body: body
+      });
+
+      let ok = res.ok;
+      try{
+        const data = await res.json();
+        ok = ok && data.success;
+      }catch(parseErr){
+        // Response wasn't readable — the request still reached the
+        // endpoint, so treat as sent rather than failed.
+      }
+
+      if(ok){
+        markThumbDone(thumbId);
+      } else {
+        markThumbError(thumbId);
+      }
+    }catch(err){
+      markThumbError(thumbId);
+    }
   }
 })();
 </script>
