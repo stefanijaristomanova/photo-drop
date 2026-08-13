@@ -200,8 +200,8 @@
 -->
 <script>
   const CONFIG = {
-    ENDPOINT: 'https://script.google.com/macros/s/AKfycbwr_q6JRO_pd_F6acre9V3ykEW8MOjLfTxhGYNVPv6S0wkhmlfO3VlbgCHj4UeHvSBudQ/exec',                    // <-- paste your Apps Script /exec URL here
-    FOLDER: 'Prijovci'     // <-- change if you want a different folder name
+    ENDPOINT: 'https://script.google.com/macros/s/AKfycbyNXPn1ccLVgRFvnOPWNjAuge6clNamq_hmCmzFKcfF5l3tUcM9M9jK-McnMER7dWHd0w/exec',                    // <-- paste your Apps Script /exec URL here
+    FOLDER: 'Photo Drop Uploads'     // <-- change if you want a different folder name
   };
 </script>
 
@@ -232,23 +232,23 @@
     <div class="filmstrip">
       <div class="filmstrip-inner">
         <div class="intro">
-          <p>Прикачување во <b>фолдерот</b></p>
+          <p>Uploading to <b>${escapeHtml(CONFIG.FOLDER)}</b></p>
         </div>
         <div class="dropzone" id="dropzone">
           <div class="icon">&#128247;</div>
-          <div><b>Избери фотографии</b></div>
-          <div class="sub">или направи фотографија</div>
+          <div><b>Choose photos</b></div>
+          <div class="sub">or take a new one</div>
         </div>
-        <input type="file" id="fileInput" accept="image/*" multiple capture="environment">
+        <input type="file" id="fileInput" accept="image/*" multiple>
         <div class="thumbs" id="thumbs"></div>
         <div class="actions" id="actions" style="display:none">
-          <button class="btn btn-secondary" id="addMoreBtn">Додај повеќе</button>
-          <button class="btn btn-primary" id="uploadBtn">Прикачи</button>
+          <button class="btn btn-secondary" id="addMoreBtn">Add more</button>
+          <button class="btn btn-primary" id="uploadBtn">Upload</button>
         </div>
         <div class="count-note" id="countNote"></div>
       </div>
     </div>
-
+    <footer>NO SIGN-IN NEEDED &middot; PHOTOS GO STRAIGHT TO YOUR DRIVE</footer>
   `;
 
   let staged = []; // { id, file }
@@ -322,7 +322,7 @@
     const addMoreBtn = document.getElementById('addMoreBtn');
     uploadBtn.disabled = true;
     addMoreBtn.disabled = true;
-    uploadBtn.textContent = 'Прикачување\u2026';
+    uploadBtn.textContent = 'Uploading\u2026';
 
     const toUpload = [...staged];
     for(const item of toUpload){
@@ -362,17 +362,26 @@
         body: body
       });
 
-      let ok = res.ok;
+      const rawText = await res.text();
+      let ok = false;
       try{
-        const data = await res.json();
-        ok = ok && data.success;
+        const data = JSON.parse(rawText);
+        ok = !!(res.ok && data.success);
+        if(!ok){
+          console.error('Photo Drop: endpoint reported failure for', file.name, data);
+        }
       }catch(parseErr){
-        // Response wasn't readable — the request still reached the
-        // endpoint, so treat as sent rather than failed.
+        // The response wasn't JSON — usually means the request never
+        // reached your Apps Script code (wrong URL, deployment needs
+        // re-authorizing, or "Execute as" / "Who has access" isn't set
+        // to Me / Anyone). Logging the raw response makes this visible
+        // in the browser console instead of failing silently.
+        console.error('Photo Drop: unexpected response for', file.name, rawText.slice(0, 500));
       }
 
       setThumbBadge(thumbId, ok ? '\u2713' : '!');
     }catch(err){
+      console.error('Photo Drop: network error for', file.name, err);
       setThumbBadge(thumbId, '!');
     }
   }
