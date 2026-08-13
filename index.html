@@ -321,7 +321,7 @@
     const addMoreBtn = document.getElementById('addMoreBtn');
     uploadBtn.disabled = true;
     addMoreBtn.disabled = true;
-    uploadBtn.textContent = 'Uploading\u2026';
+    uploadBtn.textContent = 'Прикачување\u2026';
 
     const toUpload = [...staged];
     for(const item of toUpload){
@@ -334,7 +334,7 @@
     document.getElementById('actions').style.display = 'none';
     uploadBtn.disabled = false;
     addMoreBtn.disabled = false;
-    uploadBtn.textContent = 'Upload';
+    uploadBtn.textContent = 'Прикачи';
   });
 
   function fileToBase64(file){
