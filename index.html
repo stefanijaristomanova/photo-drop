@@ -242,8 +242,8 @@
         <input type="file" id="fileInput" accept="image/*" multiple>
         <div class="thumbs" id="thumbs"></div>
         <div class="actions" id="actions" style="display:none">
-          <button class="btn btn-secondary" id="addMoreBtn">Add more</button>
-          <button class="btn btn-primary" id="uploadBtn">Upload</button>
+          <button class="btn btn-secondary" id="addMoreBtn">Додади повеќе</button>
+          <button class="btn btn-primary" id="uploadBtn">Прикачи</button>
         </div>
         <div class="count-note" id="countNote"></div>
       </div>
@@ -278,7 +278,7 @@
       note.textContent = '';
     } else {
       actions.style.display = 'flex';
-      note.textContent = staged.length + (staged.length === 1 ? ' photo selected' : ' photos selected');
+      note.textContent =  'Селектирани фотографии: ' + staged.length;
     }
   }
 
