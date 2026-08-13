@@ -139,6 +139,30 @@
     border-radius:20px;
     font-family:'JetBrains Mono',monospace;
   }
+  .thumb .remove{
+    position:absolute;top:4px;right:4px;
+    width:18px;height:18px;
+    border-radius:50%;
+    background:rgba(21,19,16,0.75);
+    color:var(--paper);
+    font-size:11px;
+    line-height:18px;
+    text-align:center;
+    cursor:pointer;
+  }
+
+  .actions{margin-top:16px;display:flex;gap:10px;}
+  .actions .btn{flex:1;}
+  .btn-secondary{background:transparent;color:var(--ink);border:1px solid rgba(21,19,16,0.2);}
+  .btn-secondary:hover{border-color:var(--ink);}
+  .btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+  .count-note{
+    font-size:12px;
+    opacity:0.55;
+    text-align:center;
+    margin-top:12px;
+  }
 
   .banner{
     border:1px solid var(--amber-dim);
@@ -208,31 +232,110 @@
     <div class="filmstrip">
       <div class="filmstrip-inner">
         <div class="intro">
-          <p>Uploading to <b>${escapeHtml(CONFIG.FOLDER)}</b></p>
+          <p>Прикачување во <b>фолдерот</b></p>
         </div>
         <div class="dropzone" id="dropzone">
           <div class="icon">&#128247;</div>
-          <div><b>Choose photos</b></div>
-          <div class="sub">or take a new one</div>
+          <div><b>Избери фотографии</b></div>
+          <div class="sub">или направи фотографија</div>
         </div>
         <input type="file" id="fileInput" accept="image/*" multiple capture="environment">
         <div class="thumbs" id="thumbs"></div>
+        <div class="actions" id="actions" style="display:none">
+          <button class="btn btn-secondary" id="addMoreBtn">Додај повеќе</button>
+          <button class="btn btn-primary" id="uploadBtn">Прикачи</button>
+        </div>
+        <div class="count-note" id="countNote"></div>
       </div>
     </div>
-    <footer>NO SIGN-IN NEEDED &middot; PHOTOS GO STRAIGHT TO YOUR DRIVE</footer>
+
   `;
+
+  let staged = []; // { id, file }
 
   document.getElementById('dropzone').addEventListener('click', () => {
     document.getElementById('fileInput').click();
   });
+  document.getElementById('addMoreBtn').addEventListener('click', () => {
+    document.getElementById('fileInput').click();
+  });
 
-  document.getElementById('fileInput').addEventListener('change', async (e) => {
+  document.getElementById('fileInput').addEventListener('change', (e) => {
     const files = Array.from(e.target.files || []);
-    if(files.length === 0) return;
     for(const file of files){
-      await uploadFile(file);
+      const id = 'th_' + Math.random().toString(36).slice(2);
+      staged.push({ id, file });
+      addThumb(id, file);
     }
     e.target.value = '';
+    refreshActions();
+  });
+
+  function refreshActions(){
+    const actions = document.getElementById('actions');
+    const note = document.getElementById('countNote');
+    if(staged.length === 0){
+      actions.style.display = 'none';
+      note.textContent = '';
+    } else {
+      actions.style.display = 'flex';
+      note.textContent = staged.length + (staged.length === 1 ? ' photo selected' : ' photos selected');
+    }
+  }
+
+  function addThumb(id, file){
+    const thumbs = document.getElementById('thumbs');
+    const div = document.createElement('div');
+    div.className = 'thumb';
+    div.id = id;
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    const remove = document.createElement('div');
+    remove.className = 'remove';
+    remove.textContent = '\u2715';
+    remove.onclick = () => {
+      staged = staged.filter(s => s.id !== id);
+      div.remove();
+      refreshActions();
+    };
+    div.appendChild(img);
+    div.appendChild(remove);
+    thumbs.appendChild(div);
+  }
+
+  function setThumbBadge(id, text){
+    const el = document.getElementById(id);
+    if(!el) return;
+    let badge = el.querySelector('.badge');
+    if(!badge){
+      badge = document.createElement('div');
+      badge.className = 'badge';
+      el.appendChild(badge);
+    }
+    const remove = el.querySelector('.remove');
+    if(remove) remove.remove();
+    badge.textContent = text;
+  }
+
+  document.getElementById('uploadBtn').addEventListener('click', async () => {
+    const uploadBtn = document.getElementById('uploadBtn');
+    const addMoreBtn = document.getElementById('addMoreBtn');
+    uploadBtn.disabled = true;
+    addMoreBtn.disabled = true;
+    uploadBtn.textContent = 'Прикачување\u2026';
+
+    const toUpload = [...staged];
+    for(const item of toUpload){
+      setThumbBadge(item.id, '\u2026');
+      await uploadFile(item.file, item.id);
+    }
+
+    staged = [];
+    document.getElementById('countNote').textContent = 'Done \u2014 you can select more photos to upload again.';
+    document.getElementById('actions').style.display = 'none';
+    uploadBtn.disabled = false;
+    addMoreBtn.disabled = false;
+    uploadBtn.textContent = 'Upload';
   });
 
   function fileToBase64(file){
@@ -244,33 +347,7 @@
     });
   }
 
-  function addThumb(id, file){
-    const thumbs = document.getElementById('thumbs');
-    const div = document.createElement('div');
-    div.className = 'thumb';
-    div.id = id;
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(file);
-    const badge = document.createElement('div');
-    badge.className = 'badge';
-    badge.textContent = '\u2026';
-    div.appendChild(img);
-    div.appendChild(badge);
-    thumbs.prepend(div);
-  }
-  function markThumbDone(id){
-    const el = document.getElementById(id);
-    if(el) el.querySelector('.badge').textContent = '\u2713';
-  }
-  function markThumbError(id){
-    const el = document.getElementById(id);
-    if(el) el.querySelector('.badge').textContent = '!';
-  }
-
-  async function uploadFile(file){
-    const thumbId = 'th_' + Math.random().toString(36).slice(2);
-    addThumb(thumbId, file);
-
+  async function uploadFile(file, thumbId){
     try{
       const base64 = await fileToBase64(file);
       const body = new URLSearchParams({
@@ -294,13 +371,9 @@
         // endpoint, so treat as sent rather than failed.
       }
 
-      if(ok){
-        markThumbDone(thumbId);
-      } else {
-        markThumbError(thumbId);
-      }
+      setThumbBadge(thumbId, ok ? '\u2713' : '!');
     }catch(err){
-      markThumbError(thumbId);
+      setThumbBadge(thumbId, '!');
     }
   }
 })();
